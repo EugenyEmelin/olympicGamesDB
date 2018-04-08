@@ -150,21 +150,26 @@ JOIN olympic_games og ON c.og_id = og.og_id;
 DELETE FROM registration
 WHERE athlete_id = $athlete_id AND competition_id = $competition_id;
 
-/*Выбор результатов соревнований из БД*/
-SELECT r.result_id, r.competition_id, c.og_id, og.og_name,
+/*Создадим представление для вывода результатов соревнований*/
+CREATE VIEW view_result
+  AS SELECT r.result_id, r.competition_id, c.og_id, og.og_name,
        c.event_id, e.sport_id, s.sport_name, e.event_name, e.gender, c.round,
-       r.athlete_id, a.f_name, a.l_name, a.country_id, ctr.country_name,
+       r.athlete_id, a.first_name, a.last_name, a.country_id, ctr.country_name,
        r.result, e.unit_id, u.unit_short_name, u.unit_type
-FROM result r
-JOIN competition c ON r.competition_id = c.competition_id
-JOIN athlete a ON r.athlete_id = a.athlete_id
-JOIN events e ON c.event_id = e.event_id
-JOIN unit u ON e.unit_id = u.unit_id
-JOIN country ctr ON a.country_id = ctr.country_id
-JOIN sport s ON e.sport_id = s.sport_id
-JOIN olympic_games og ON c.og_id = og.og_id;
+     FROM result r
+       JOIN competition c ON r.competition_id = c.competition_id
+       JOIN athlete a ON r.athlete_id = a.athlete_id
+       JOIN events e ON c.event_id = e.event_id
+       JOIN unit u ON e.unit_id = u.unit_id
+       JOIN country ctr ON a.country_id = ctr.country_id
+       JOIN sport s ON e.sport_id = s.sport_id
+       JOIN olympic_games og ON c.og_id = og.og_id;
 
-/*Добавление результата в БД*/
+/*Выбор результатов соревнований из БД*/
+SELECT *
+FROM view_result;
+
+/*Добавление результата соревнования в БД*/
 /*id участников берутся только из таблицы регистраций registration*/
 INSERT INTO result (competition_id, athlete_id, result)
 VALUES ($competition_id, $athlete_id, $result);
@@ -179,3 +184,20 @@ WHERE result_id = $result_id;
 /*Физического удаления из БД не происходит, id результата просто добавляется в таблицу remote_result*/
 INSERT INTO remote_result (remote_result_id)
 VALUES ($remote_result_id);
+
+/*Вывод статистики по определенному спортсмену*/
+SELECT *
+FROM view_result
+WHERE athlete_id = $athlete_id;
+
+/*Вывод статистики по определенному соревнованию*/
+SELECT *
+FROM view_result
+WHERE competition_id = $competition_id;
+
+/*Вывод статистики по Олмпиаде*/
+SELECT *
+FROM view_result
+WHERE og_id = $og_id;
+
+/**/

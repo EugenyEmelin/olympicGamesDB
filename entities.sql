@@ -76,28 +76,28 @@ CREATE TABLE competition (
 CREATE TABLE registration (
   registration_id SMALLINT UNSIGNED AUTO_INCREMENT,
   athlete_id INT UNSIGNED NOT NULL,
-  event_id SMALLINT UNSIGNED NOT NULL,
+  competition_id SMALLINT UNSIGNED NOT NULL,
   PRIMARY KEY (registration_id),
   INDEX athlete_id (athlete_id ASC),
-  INDEX event_id (event_id ASC),
-  CONSTRAINT fk_athlete_id FOREIGN KEY (athlete_id)
+  INDEX competition_id (competition_id ASC),
+  CONSTRAINT fk_athlete_id_reg FOREIGN KEY (athlete_id)
     REFERENCES athlete (athlete_id)
     ON DELETE NO ACTION ON UPDATE NO ACTION,
-  CONSTRAINT fk_event_id FOREIGN KEY (event_id)
-    REFERENCES events (event_id)
+  CONSTRAINT fk_competition_id_reg FOREIGN KEY (competition_id)
+    REFERENCES competition (competition_id)
     ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE = InnoDB DEFAULT CHARSET=utf8;
 CREATE TABLE result (
   result_id INT UNSIGNED AUTO_INCREMENT,
-  event_id SMALLINT UNSIGNED NOT NULL,
+  competition_id SMALLINT UNSIGNED NOT NULL,
   athlete_id INT UNSIGNED NOT NULL,
   result FLOAT UNSIGNED NOT NULL,
   PRIMARY KEY (result_id),
-  INDEX event_id (event_id ASC),
+  INDEX competition_id (competition_id ASC),
   INDEX athlete_id (athlete_id ASC),
   INDEX result (result ASC),
-  CONSTRAINT fk_event_id_result FOREIGN KEY (event_id)
-  REFERENCES events (event_id)
+  CONSTRAINT fk_competition_id_result FOREIGN KEY (competition_id)
+  REFERENCES competition (competition_id)
     ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT fk_athlete_id_result FOREIGN KEY (athlete_id)
   REFERENCES athlete (athlete_id)
